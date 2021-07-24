@@ -8,5 +8,7 @@ const schema = new Schema({
   phone: Number,
   year: String,
   image: String,
+  ip: String,
+  ban: Boolean,
 });
 module.exports = model("users", schema);

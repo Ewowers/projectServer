@@ -1,5 +1,6 @@
 const User = require("../model/user");
 const jwt = require("jsonwebtoken");
+const ip = require("ip");
 const key = "is author Ewower";
 const generateToken = (id, status) => {
   const payload = { id };
@@ -29,6 +30,8 @@ class logick {
         password: password,
         position: "nouser",
         important: 0,
+        ip: ip.address(),
+        ban: false,
       });
       await user.save();
       return res.json({ status: true });
@@ -49,7 +52,7 @@ class logick {
       return res.json(user);
     } catch (e) {
       console.log("опипка");
-      console.log(e);
+      res.clearCookie("token").send(false);
     }
   }
   async personalInfo(req, res) {
@@ -82,6 +85,11 @@ class logick {
   async test(req, res) {
     let { token } = req.cookies;
     if (!token) return res.json({ status: false });
+    try {
+      let user = jwt.verify(token, key);
+    } catch {
+      return res.json({ status: false });
+    }
   }
   async out(req, res) {
     res.clearCookie("token").send(true);
