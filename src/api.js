@@ -1,9 +1,13 @@
 const { Router } = require("express");
 const auth = require("./api/auth");
+const order = require("./api/order");
 const product = require("./api/product");
 const blacklist = require("./api/banlist");
+const company = require("./api/company");
 const router = Router();
 router.use("/auth", auth);
 router.use("/product", product);
 router.use("/blacklist", blacklist);
+router.use("/order", order);
+router.use("/company", company);
 module.exports = router;

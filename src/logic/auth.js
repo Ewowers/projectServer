@@ -1,6 +1,7 @@
 const User = require("../model/user");
 const jwt = require("jsonwebtoken");
 const ip = require("ip");
+const BanList = require("../model/banlist");
 const key = "is author Ewower";
 const generateToken = (id, status) => {
   const payload = { id };
@@ -10,10 +11,10 @@ class logick {
   async authorization(req, res) {
     let { login, password } = req.body;
     let candidate = await User.findOne({ login });
-    console.log(candidate.position === "nouser");
     if (!candidate) return res.json({ status: false, message: "Логин не варный" });
     if (candidate.password !== password) return res.json({ status: false, message: "Пороль не верный" });
     if (candidate.position === "nouser") return res.json({ status: false, message: "Ваша заявка расматривается" });
+    if (candidate.ban) return res.json({ status: false, message: "Ваш аккаунт забанен" });
     if (candidate.position === "user") {
       return res.cookie("token", generateToken(candidate._id)).json({ status: true, url: "user" });
     }
@@ -23,7 +24,9 @@ class logick {
     const { login, password } = req.body;
     const candidate = await User.findOne({ login });
     if (candidate) return res.json({ message: "Данный логин занят" });
-
+    const address = ip.address();
+    let ban = BanList.findOne({ ip: address });
+    if (ban) return res.json({ message: "вы забанены" });
     try {
       let user = new User({
         login: login,
@@ -87,6 +90,8 @@ class logick {
     if (!token) return res.json({ status: false });
     try {
       let user = jwt.verify(token, key);
+      user = await User.findById(user.id);
+      if (user.ban) return res.clearCookie("token").json({ status: false });
     } catch {
       return res.json({ status: false });
     }

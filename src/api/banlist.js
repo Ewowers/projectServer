@@ -19,7 +19,6 @@ router.post("/add", async (req, res) => {
 });
 router.delete("/:id", async (req, res) => {
   let user = await Model.findById(req.params.id);
-  console.log(user.account);
   await User.findByIdAndUpdate(user.account._id, { ban: false });
   await Model.findByIdAndDelete(req.params.id);
   res.send(true);
