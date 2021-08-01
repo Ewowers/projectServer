@@ -15,12 +15,12 @@ router.post("/add", async (req, res) => {
     account: user,
   });
   await model.save();
-  res.send(true);
+  res.end();
 });
 router.delete("/:id", async (req, res) => {
   let user = await Model.findById(req.params.id);
   await User.findByIdAndUpdate(user.account._id, { ban: false });
   await Model.findByIdAndDelete(req.params.id);
-  res.send(true);
+  res.end();
 });
 module.exports = router;

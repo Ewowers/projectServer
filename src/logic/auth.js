@@ -25,7 +25,7 @@ class logick {
     const candidate = await User.findOne({ login });
     if (candidate) return res.json({ message: "Данный логин занят" });
     const address = ip.address();
-    let ban = BanList.findOne({ ip: address });
+    let ban = await BanList.findOne({ ip: address });
     if (ban) return res.json({ message: "вы забанены" });
     try {
       let user = new User({
@@ -73,7 +73,6 @@ class logick {
     let users;
     if (status !== "all") users = await User.find({ position: status });
     else users = await User.find({});
-    console.log("get/user");
     return res.json(users);
   }
   async deletes(req, res) {
